@@ -9,17 +9,18 @@ import { Todos } from "../components/Todos";
 import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
-  const todos = trpc.useQuery(["get-todos"]);
+  const [todo, setTodo] = useState("");
+  const [filter, setFilter] = useState("all");
+
+  const todos = trpc.useQuery(["get-todos", { filter }]);
   const mutation = trpc.useMutation(["create-todo"]);
   const updateTodo = trpc.useMutation(["update-todo-done"]);
-
-  const [todo, setTodo] = useState("");
 
   const handleAddTodo = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     await mutation.mutateAsync({ todo });
-    todos.refetch({});
+    await todos.refetch();
     setTodo("");
   };
 
@@ -27,6 +28,10 @@ const Home: NextPage = () => {
     await updateTodo.mutateAsync({ id, done: !done });
     todos.refetch({});
   };
+
+  const filterClasses = (value: string) => (filter === value ? "text-blue-500 cursor-pointer" : "hover:text-gray-200 cursor-pointer");
+
+  const completeds = todos.data?.filter((todo) => !todo.done);
 
   return (
     <Layout>
@@ -48,13 +53,31 @@ const Home: NextPage = () => {
             )}
             <Todos>
               {todos.data?.map((todo) => (
-                <Todo key={todo.id} text={todo.task} checked={todo.done} onClick={() => handleChangeTodo(todo.id, todo.done)} />
+                <Todo key={todo.id} text={todo.task} checked={todo.done} toggleTodo={() => handleChangeTodo(todo.id, todo.done)} />
               ))}
             </Todos>
+
+            <div className="flex justify-between px-7 py-4 text-sm border-t border-gray-700 text-gray-500">
+              <div className="hover:text-gray-200 cursor-pointer">{completeds && `${completeds.length} items left`}</div>
+
+              <div className="flex gap-4">
+                <p onClick={() => setFilter("all")} className={filterClasses("all")}>
+                  All
+                </p>
+                <p onClick={() => setFilter("active")} className={filterClasses("active")}>
+                  Active
+                </p>
+                <p onClick={() => setFilter("completed")} className={filterClasses("completed")}>
+                  Completed
+                </p>
+              </div>
+
+              <div className="hover:text-gray-200 cursor-pointer">Clear Completed</div>
+            </div>
           </div>
 
           <footer>
-            <p className="text-center text-gray-500">Drag and drop to reorder list</p>
+            <p className="text-center text-sm text-gray-500">Drag and drop to reorder list</p>
           </footer>
         </main>
       </section>

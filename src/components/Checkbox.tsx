@@ -8,7 +8,9 @@ export const Checkbox: React.FC<CheckboxProps> = ({ checked }) => {
   const checkedClass = checked ? "bg-gradient-to-br from-blue-400 to-pink-500" : "border-2";
 
   return (
-    <div className={`h-7 w-7 rounded-full flex justify-center items-center border-gray-600 ${checkedClass}`}>
+    <div
+      className={`h-7 w-7 rounded-full flex justify-center items-center border-gray-700 hover:border-gray-500 transition-all ${checkedClass} `}
+    >
       {checked && <RiCheckFill />}
     </div>
   );

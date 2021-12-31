@@ -12,10 +12,26 @@ type Todo = {
   created_at: Date;
 };
 
-export const getTodos = async (): Promise<Todo[] | undefined> => {
+export const getTodos = async (filter: "all" | "active" | "completed"): Promise<Todo[] | undefined> => {
   if (DATABASE_ID) {
+    const filters = {
+      active: {
+        property: "done",
+        checkbox: {
+          equals: false,
+        },
+      },
+      completed: {
+        property: "done",
+        checkbox: {
+          equals: true,
+        },
+      },
+    };
+
     const { results: pages } = await notion.databases.query({
       database_id: DATABASE_ID,
+      filter: filter !== "all" ? filters[filter] : undefined,
     });
 
     const formatedResults = formatNotionResponse(pages);
@@ -58,6 +74,12 @@ export const updateTodoDone = async (id: string, done: boolean): Promise<boolean
       },
     });
 
+    return true;
+  }
+};
+
+export const removeTodo = async (id: string): Promise<boolean | undefined> => {
+  if (DATABASE_ID) {
     return true;
   }
 };

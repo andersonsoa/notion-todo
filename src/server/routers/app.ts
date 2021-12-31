@@ -2,11 +2,18 @@ import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { getTodos, addTodo, updateTodoDone } from "../../utils/notion";
 
+type Filters = "all" | "active" | "completed";
+
 export const appRouter = trpc
   .router()
+
   .query("get-todos", {
+    input: z.object({
+      filter: z.string().regex(/^(all|active|completed)$/),
+    }),
     async resolve({ input }) {
-      const todos = await getTodos();
+      const { filter } = input;
+      const todos = await getTodos(filter as Filters);
 
       return todos;
     },
