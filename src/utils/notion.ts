@@ -24,6 +24,44 @@ export const getTodos = async (): Promise<Todo[] | undefined> => {
   }
 };
 
+export const addTodo = async (task: string): Promise<Todo | undefined> => {
+  if (DATABASE_ID) {
+    const response = await notion.pages.create({
+      parent: {
+        database_id: DATABASE_ID,
+      },
+      properties: {
+        task: {
+          type: "title",
+          title: [{ type: "text", text: { content: task } }],
+        },
+        done: {
+          type: "checkbox",
+          checkbox: false,
+        },
+      },
+    });
+
+    return { id: response.id, task, done: false, created_at: new Date(response.created_time) };
+  }
+};
+
+export const updateTodoDone = async (id: string, done: boolean): Promise<boolean | undefined> => {
+  if (DATABASE_ID) {
+    await notion.pages.update({
+      page_id: id,
+      properties: {
+        done: {
+          type: "checkbox",
+          checkbox: done,
+        },
+      },
+    });
+
+    return true;
+  }
+};
+
 // utils
 function formatNotionResponse(pages: Page[]): Todo[] {
   return pages.map((page) => {

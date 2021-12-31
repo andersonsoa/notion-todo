@@ -3,11 +3,12 @@ import { Checkbox } from "./Checkbox";
 interface TodoProps {
   checked: boolean;
   text: string;
+  onClick?: () => void;
 }
 
-export const Todo: React.FC<TodoProps> = ({ text, checked }) => {
+export const Todo: React.FC<TodoProps> = ({ text, checked, onClick }) => {
   return (
-    <tr>
+    <tr className="cursor-pointer" onClick={onClick}>
       <td className="p-6 whitespace-nowrap w-2">
         <Checkbox checked={checked} />
       </td>

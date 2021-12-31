@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
+import { FormEvent, useState } from "react";
 import { BackgroundImage } from "../components/BackgroundImage";
-import { Checkbox } from "../components/Checkbox";
 import { Header } from "../components/Header";
 import { Input } from "../components/Input";
 import { Layout } from "../components/Layout";
@@ -9,7 +9,24 @@ import { Todos } from "../components/Todos";
 import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
-  const data = trpc.useQuery(["get-todos"]);
+  const todos = trpc.useQuery(["get-todos"]);
+  const mutation = trpc.useMutation(["create-todo"]);
+  const updateTodo = trpc.useMutation(["update-todo-done"]);
+
+  const [todo, setTodo] = useState("");
+
+  const handleAddTodo = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    await mutation.mutateAsync({ todo });
+    todos.refetch({});
+    setTodo("");
+  };
+
+  const handleChangeTodo = async (id: string, done: boolean) => {
+    await updateTodo.mutateAsync({ id, done: !done });
+    todos.refetch({});
+  };
 
   return (
     <Layout>
@@ -19,15 +36,20 @@ const Home: NextPage = () => {
         <main className="max-w-xl w-full mx-auto px-4">
           <Header />
 
-          <form>
-            <Input placeholder="Create a new todo..." name="todo" type="text" />
+          <form onSubmit={handleAddTodo}>
+            <Input value={todo} onChange={(e) => setTodo(e.target.value)} placeholder="Create a new todo..." name="todo" type="text" />
           </form>
 
-          <div className="my-10 bg-gray-800 overflow-hidden sm:rounded-lg">
+          <div className="my-10 bg-gray-800 overflow-hidden sm:rounded-lg relative">
+            {(mutation.isLoading || updateTodo.isLoading || todos.isRefetching) && (
+              <div className="absolute inset-0 bg-gray-800 opacity-90 flex justify-center items-center">
+                <p>Loading...</p>
+              </div>
+            )}
             <Todos>
-              <Todo text="Read for 1 hour" checked={true} />
-              <Todo text="Jag around the park 3x" checked={false} />
-              <Todo text="Pick up groceries" checked={false} />
+              {todos.data?.map((todo) => (
+                <Todo key={todo.id} text={todo.task} checked={todo.done} onClick={() => handleChangeTodo(todo.id, todo.done)} />
+              ))}
             </Todos>
           </div>
 
