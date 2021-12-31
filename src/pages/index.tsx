@@ -1,6 +1,8 @@
 import type { NextPage } from "next";
 import { BackgroundImage } from "../components/BackgroundImage";
+import { Checkbox } from "../components/Checkbox";
 import { Header } from "../components/Header";
+import { Input } from "../components/Input";
 import { Layout } from "../components/Layout";
 import { trpc } from "../utils/trpc";
 
@@ -16,14 +18,20 @@ const Home: NextPage = () => {
           <Header />
 
           <form>
-            <input type="text" placeholder="Create a new todo..." />
+            <Input placeholder="Create a new todo..." name="todo" type="text" />
           </form>
 
-          <div>
-            <div>
-              <div>o</div>
-              <div>Jag around the park 3x</div>
-            </div>
+          <div className="my-10 bg-gray-800 overflow-hidden sm:rounded-lg">
+            <table className="min-w-full divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200">
+                <tr>
+                  <td className="p-6 whitespace-nowrap w-2">
+                    <Checkbox />
+                  </td>
+                  <td className="py-6 pr-6 whitespace-nowrap">Read for 1 hour</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           <footer>
