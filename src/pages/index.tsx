@@ -4,6 +4,8 @@ import { Checkbox } from "../components/Checkbox";
 import { Header } from "../components/Header";
 import { Input } from "../components/Input";
 import { Layout } from "../components/Layout";
+import { Todo } from "../components/Todo";
+import { Todos } from "../components/Todos";
 import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
@@ -22,20 +24,15 @@ const Home: NextPage = () => {
           </form>
 
           <div className="my-10 bg-gray-800 overflow-hidden sm:rounded-lg">
-            <table className="min-w-full divide-y divide-gray-200">
-              <tbody className="divide-y divide-gray-200">
-                <tr>
-                  <td className="p-6 whitespace-nowrap w-2">
-                    <Checkbox />
-                  </td>
-                  <td className="py-6 pr-6 whitespace-nowrap">Read for 1 hour</td>
-                </tr>
-              </tbody>
-            </table>
+            <Todos>
+              <Todo text="Read for 1 hour" checked={true} />
+              <Todo text="Jag around the park 3x" checked={false} />
+              <Todo text="Pick up groceries" checked={false} />
+            </Todos>
           </div>
 
           <footer>
-            <p>Drag and drop to reorder list</p>
+            <p className="text-center text-gray-500">Drag and drop to reorder list</p>
           </footer>
         </main>
       </section>
