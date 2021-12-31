@@ -1,16 +1,12 @@
 import * as trpc from "@trpc/server";
 import { z } from "zod";
+import { getTodos } from "../../utils/notion";
 
-export const appRouter = trpc.router().query("hello", {
-  input: z
-    .object({
-      text: z.string().nullish(),
-    })
-    .nullish(),
-  resolve({ input }) {
-    return {
-      greeting: `hello ${input?.text ?? "world"}`,
-    };
+export const appRouter = trpc.router().query("get-todos", {
+  async resolve({ input }) {
+    const todos = await getTodos();
+
+    return todos;
   },
 });
 
